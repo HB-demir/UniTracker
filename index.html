@@ -454,72 +454,6 @@ input:focus, select:focus {
 
 .week-btn:hover { transform: scale(1.05); }
 
-/* Multi-part week grid */
-.week-parts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.week-group {
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  background: #FAFAF8;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.week-label {
-  font-size: 11px;
-  color: var(--text-light);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.parts-row {
-  display: flex;
-  gap: 4px;
-  width: 100%;
-  justify-content: center;
-}
-
-.part-btn {
-  width: 32px;
-  height: 32px;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  background: #F0EDE8;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.part-btn.present {
-  background: var(--success-light);
-  border-color: var(--success);
-  color: var(--success);
-}
-
-.part-btn.absent {
-  background: var(--danger-light);
-  border-color: var(--danger);
-  color: var(--danger);
-}
-
-.part-btn:hover { transform: scale(1.1); }
-
 .chevron {
   transition: transform 0.3s ease;
   color: var(--text-light);
@@ -675,7 +609,6 @@ input:focus, select:focus {
   .course-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .course-stats { width: 100%; justify-content: space-between; }
   .week-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
-  .week-parts-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
   .result-value { font-size: 40px; }
 }
 </style>
@@ -815,23 +748,14 @@ input:focus, select:focus {
         <input type="text" id="m-course-name" placeholder="Örn: Veri Yapıları">
       </div>
     </div>
-    <div class="form-row form-row-3">
+    <div class="form-row form-row-2">
       <div class="form-group">
         <label>Toplam Hafta</label>
         <input type="number" id="m-total-weeks" value="14" min="1" max="30">
       </div>
       <div class="form-group">
-        <label>Devamsızlık Hakkı</label>
+        <label>Max Devamsızlık Hakkı</label>
         <input type="number" id="m-max-absent" value="3" min="1" max="20">
-      </div>
-      <div class="form-group">
-        <label>Part Sayısı</label>
-        <select id="m-course-parts">
-          <option value="1">1 part</option>
-          <option value="2" selected>2 part</option>
-          <option value="3">3 part</option>
-          <option value="4">4 part</option>
-        </select>
       </div>
     </div>
     <div class="form-row form-row-3">
@@ -850,19 +774,31 @@ input:focus, select:focus {
       <div class="form-group">
         <label>Ders Saati</label>
         <select id="m-course-hour">
-          <option value="08">08:00</option>
-          <option value="09">09:00</option>
-          <option value="10">10:00</option>
-          <option value="11">11:00</option>
-          <option value="12">12:00</option>
-          <option value="13">13:00</option>
-          <option value="14">14:00</option>
-          <option value="15">15:00</option>
-          <option value="16">16:00</option>
-          <option value="17">17:00</option>
-          <option value="18">18:00</option>
-          <option value="19">19:00</option>
-          <option value="20">20:00</option>
+          <option value="08:00">08:00</option>
+          <option value="08:30">08:30</option>
+          <option value="09:00">09:00</option>
+          <option value="09:30">09:30</option>
+          <option value="10:00">10:00</option>
+          <option value="10:30">10:30</option>
+          <option value="11:00">11:00</option>
+          <option value="11:30">11:30</option>
+          <option value="12:00">12:00</option>
+          <option value="12:30">12:30</option>
+          <option value="13:00">13:00</option>
+          <option value="13:30">13:30</option>
+          <option value="14:00">14:00</option>
+          <option value="14:30">14:30</option>
+          <option value="15:00">15:00</option>
+          <option value="15:30">15:30</option>
+          <option value="16:00">16:00</option>
+          <option value="16:30">16:30</option>
+          <option value="17:00">17:00</option>
+          <option value="17:30">17:30</option>
+          <option value="18:00">18:00</option>
+          <option value="18:30">18:30</option>
+          <option value="19:00">19:00</option>
+          <option value="19:30">19:30</option>
+          <option value="20:00">20:00</option>
         </select>
       </div>
       <div class="form-group">
@@ -1140,26 +1076,22 @@ function addCourse() {
   const name = document.getElementById('m-course-name').value.trim();
   const totalWeeks = parseInt(document.getElementById('m-total-weeks').value) || 14;
   const maxAbsent = parseInt(document.getElementById('m-max-absent').value) || 3;
-  const parts = parseInt(document.getElementById('m-course-parts').value) || 2;
   const day = document.getElementById('m-course-day').value;
   const hour = document.getElementById('m-course-hour').value;
-  const duration = parseInt(document.getElementById('m-course-duration').value) || 2;
+  const duration = parseFloat(document.getElementById('m-course-duration').value) || 2;
 
   if (!name) { showToast('Ders adı giriniz!'); return; }
 
   const courses = loadData(STORAGE_KEYS.courses);
-  // Each week is an array of parts, each part is null (unmarked), true (present), or false (absent)
-  const weeks = Array.from({ length: totalWeeks }, () => Array(parts).fill(null));
   courses.push({
     id: Date.now(),
     name,
     totalWeeks,
     maxAbsent,
-    parts,
     day,
     hour,
     duration,
-    weeks
+    weeks: Array(totalWeeks).fill(null) // null = unmarked, true = present, false = absent
   });
   saveData(STORAGE_KEYS.courses, courses);
 
@@ -1169,22 +1101,19 @@ function addCourse() {
   showToast(`"${name}" eklendi`);
 }
 
-function togglePart(courseId, weekIdx, partIdx) {
+function toggleWeek(courseId, weekIdx) {
   const courses = loadData(STORAGE_KEYS.courses);
   const course = courses.find(c => c.id === courseId);
   if (!course) return;
 
-  // Migration: if old format (single value), convert to array
-  if (!Array.isArray(course.weeks[weekIdx])) {
-    const parts = course.parts || 1;
-    course.weeks[weekIdx] = Array(parts).fill(course.weeks[weekIdx]);
-  }
+  // Handle legacy array format
+  let val = course.weeks[weekIdx];
+  if (Array.isArray(val)) val = val[0];
 
-  const current = course.weeks[weekIdx][partIdx];
   // Cycle: null → present → absent → null
-  if (current === null) course.weeks[weekIdx][partIdx] = true;
-  else if (current === true) course.weeks[weekIdx][partIdx] = false;
-  else course.weeks[weekIdx][partIdx] = null;
+  if (val === null) course.weeks[weekIdx] = true;
+  else if (val === true) course.weeks[weekIdx] = false;
+  else course.weeks[weekIdx] = null;
 
   saveData(STORAGE_KEYS.courses, courses);
   renderCourses();
@@ -1206,17 +1135,12 @@ function toggleCourseBody(courseId) {
   chevron.classList.toggle('open');
 }
 
-// Helper: count absences across all parts of all weeks
+// Helper: count absences (handles legacy array format)
 function countAbsent(course) {
   let count = 0;
-  const parts = course.parts || 1;
   course.weeks.forEach(w => {
-    if (Array.isArray(w)) {
-      w.forEach(p => { if (p === false) count++; });
-    } else {
-      // Legacy single-value format
-      if (w === false) count++;
-    }
+    const val = Array.isArray(w) ? w[0] : w;
+    if (val === false) count++;
   });
   return count;
 }
@@ -1224,17 +1148,10 @@ function countAbsent(course) {
 function countPresent(course) {
   let count = 0;
   course.weeks.forEach(w => {
-    if (Array.isArray(w)) {
-      w.forEach(p => { if (p === true) count++; });
-    } else {
-      if (w === true) count++;
-    }
+    const val = Array.isArray(w) ? w[0] : w;
+    if (val === true) count++;
   });
   return count;
-}
-
-function totalParts(course) {
-  return course.totalWeeks * (course.parts || 1);
 }
 
 function renderCourses() {
@@ -1262,7 +1179,7 @@ function renderCourses() {
         const absent = countAbsent(c);
         const remaining = Math.max(0, c.maxAbsent - absent);
         const dayLabel = c.day ? dayNamesShort[c.day] : '?';
-        const hourLabel = c.hour ? c.hour + ':00' : '?';
+        const hourLabel = c.hour || '?';
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
           <div>
             <strong style="color:var(--primary);">${c.name}</strong>
@@ -1287,10 +1204,8 @@ function renderCourses() {
   container.innerHTML = courses.map(course => {
     const absent = countAbsent(course);
     const present = countPresent(course);
-    const total = totalParts(course);
     const remaining = course.maxAbsent - absent;
-    const pct = total > 0 ? Math.round((present / total) * 100) : 0;
-    const parts = course.parts || 1;
+    const pct = course.totalWeeks > 0 ? Math.round((present / course.totalWeeks) * 100) : 0;
 
     let badgeClass = 'ok', badgeText = `${remaining} hak kaldı`;
     if (remaining <= 0) { badgeClass = 'danger'; badgeText = 'Hak doldu!'; }
@@ -1300,44 +1215,27 @@ function renderCourses() {
     const offset = circumference - (pct / 100) * circumference;
     const ringColor = remaining <= 0 ? 'var(--danger)' : remaining === 1 ? 'var(--warning)' : 'var(--success)';
 
-    let weeksHtml = '';
-    if (parts === 1) {
-      // Simple single-part: same as before
-      weeksHtml = course.weeks.map((w, i) => {
-        const val = Array.isArray(w) ? w[0] : w;
-        let cls = '', icon = '—';
-        if (val === true) { cls = 'present'; icon = '✓'; }
-        else if (val === false) { cls = 'absent'; icon = '✗'; }
-        return `<button class="week-btn ${cls}" onclick="togglePart(${course.id}, ${i}, 0)"><span>H${i + 1}</span><span>${icon}</span></button>`;
-      }).join('');
-    } else {
-      // Multi-part: each week shows its parts vertically
-      weeksHtml = course.weeks.map((w, i) => {
-        const weekParts = Array.isArray(w) ? w : Array(parts).fill(w);
-        const partsHtml = weekParts.map((p, pi) => {
-          let cls = '', icon = '—';
-          if (p === true) { cls = 'present'; icon = '✓'; }
-          else if (p === false) { cls = 'absent'; icon = '✗'; }
-          return `<button class="part-btn ${cls}" onclick="togglePart(${course.id}, ${i}, ${pi})" title="Hafta ${i+1} Part ${pi+1}"><span>${icon}</span></button>`;
-        }).join('');
-        return `<div class="week-group"><div class="week-label">H${i + 1}</div><div class="parts-row">${partsHtml}</div></div>`;
-      }).join('');
-    }
+    const weeksHtml = course.weeks.map((w, i) => {
+      const val = Array.isArray(w) ? w[0] : w;
+      let cls = '', icon = '—';
+      if (val === true) { cls = 'present'; icon = '✓'; }
+      else if (val === false) { cls = 'absent'; icon = '✗'; }
+      return `<button class="week-btn ${cls}" onclick="toggleWeek(${course.id}, ${i})"><span>H${i + 1}</span><span>${icon}</span></button>`;
+    }).join('');
 
     const dayNames = { MO: 'Pazartesi', TU: 'Salı', WE: 'Çarşamba', TH: 'Perşembe', FR: 'Cuma', SA: 'Cumartesi', SU: 'Pazar' };
     const dayLabel = course.day ? dayNames[course.day] : '';
-    const hourLabel = course.hour ? course.hour + ':00' : '';
+    const hourLabel = course.hour || '';
     const dur = course.duration || 2;
     const durText = dur % 1 === 0 ? `${dur} saat` : `${Math.floor(dur)} saat 30 dk`;
     const scheduleText = dayLabel && hourLabel ? `${dayLabel} ${hourLabel} (${durText})` : '';
-    const partsText = parts > 1 ? ` • ${parts} part` : '';
 
     return `
       <div class="course-card">
         <div class="course-header" onclick="toggleCourseBody(${course.id})">
           <div class="course-info">
             <h3>${course.name}</h3>
-            <p>${scheduleText ? scheduleText + ' • ' : ''}${course.totalWeeks} hafta${partsText} • ${present} giriş • ${absent} devamsızlık</p>
+            <p>${scheduleText ? scheduleText + ' • ' : ''}${course.totalWeeks} hafta • ${present} giriş • ${absent} devamsızlık</p>
           </div>
           <div class="course-stats">
             <span class="stat-badge ${badgeClass}">${badgeText}</span>
@@ -1359,8 +1257,8 @@ function renderCourses() {
         </div>
         <div class="course-body" id="body-${course.id}">
           <div class="course-body-inner">
-            <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">${parts > 1 ? 'Her haftada ' + parts + ' part var. Her part\'ı ayrı ayrı tıkla: ✓ Girdim → ✗ Girmedim → — İşaretlenmemiş' : 'Tıkla: ✓ Girdim → ✗ Girmedim → — İşaretlenmemiş'}</p>
-            <div class="${parts > 1 ? 'week-parts-grid' : 'week-grid'}">${weeksHtml}</div>
+            <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">Tıkla: ✓ Girdim → ✗ Girmedim → — İşaretlenmemiş</p>
+            <div class="week-grid">${weeksHtml}</div>
           </div>
         </div>
       </div>`;
@@ -1375,15 +1273,16 @@ function generateCourseICSEvent(course) {
   const pad = n => String(n).padStart(2, '0');
 
   const courseDay = course.day || 'MO';
-  const courseHour = course.hour || '09';
+  const courseHourRaw = course.hour || '09:00';
+  const [startH, startM] = courseHourRaw.includes(':') ? courseHourRaw.split(':') : [courseHourRaw, '00'];
   const courseDuration = parseFloat(course.duration) || 2;
-  const startMinutes = parseInt(courseHour) * 60;
+  const startMinutes = parseInt(startH) * 60 + parseInt(startM);
   const endMinutes = Math.min(startMinutes + courseDuration * 60, 23 * 60 + 59);
   const endH = pad(Math.floor(endMinutes / 60));
   const endM = pad(endMinutes % 60);
 
   const formatDateTime = (d, h, m) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${h}${m}00`;
-  const formatDateTimeStart = (d, h) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${h}0000`;
+  const formatDateTimeStart = (d, h, m) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${h}${m}00`;
 
   // Find next occurrence of the course day
   const now = new Date();
@@ -1402,7 +1301,7 @@ function generateCourseICSEvent(course) {
   return [
     'BEGIN:VEVENT',
     `UID:unitracker-${course.id}@unitracker`,
-    `DTSTART:${formatDateTimeStart(startDate, courseHour)}`,
+    `DTSTART:${formatDateTimeStart(startDate, startH, startM)}`,
     `DTEND:${formatDateTime(startDate, endH, endM)}`,
     `RRULE:FREQ=WEEKLY;COUNT=${totalWeeks};BYDAY=${courseDay}`,
     `SUMMARY:${summaryText}`,
